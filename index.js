@@ -29,6 +29,7 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         // await client.connect();
 
+        const usersDatabase = client.db("collageDB").collection("users");
         const papresDatabase = client.db("collageDB").collection("papers");
         const collagesDatabase = client.db("collageDB").collection("collages");
 
@@ -43,6 +44,23 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result);
         })
+
+        // users related apis..........................................
+
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            console.log(user);
+            const query = { email: user.email }
+            const existingUser = await usersDatabase.findOne(query);
+
+            if (existingUser) {
+                return res.send({ message: 'User already exists' })
+            }
+
+            const result = await usersDatabase.insertOne(user);
+            res.send(result);
+        })
+
 
         // Send a ping to confirm a successful connection
         // await client.db("admin").command({ ping: 1 });
