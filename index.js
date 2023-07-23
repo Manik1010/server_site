@@ -46,10 +46,21 @@ async function run() {
         })
 
         // users related apis..........................................
+        app.get('/users', async (req, res) => {
+            const email = req.query.email;
+            console.log(email)
+            if (!email) {
+                res.send([]);
+            }
+
+            const query = { email: email }
+            const result = await usersDatabase.findOne(query);
+            res.send(result);
+        })
 
         app.post('/users', async (req, res) => {
             const user = req.body;
-            console.log(user);
+            // console.log(user);
             const query = { email: user.email }
             const existingUser = await usersDatabase.findOne(query);
 
@@ -59,6 +70,30 @@ async function run() {
 
             const result = await usersDatabase.insertOne(user);
             res.send(result);
+        })
+
+        app.put('/updateProfile/:email', async (req, res) => {
+            const email = req.params.email;
+            const data = req.body;
+            // console.log(email, data);
+
+            const filter = { email: new ObjectId(email) }
+            // console.log(filter)
+            const options = { upsert: true }
+            const updateProfile = {
+                $set: {
+                    name: data.name,
+                    email: data.email,
+                    phone: data.phone,
+                    present: data.present,
+                    nid: data.nid,
+                    url: data.url,
+                }
+            }
+
+            const result = await usersDatabase.updateOne(filter, updateProfile, options);
+            res.send(result);
+
         })
 
 
