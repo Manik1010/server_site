@@ -30,9 +30,16 @@ async function run() {
         // await client.connect();
 
         const papresDatabase = client.db("collageDB").collection("papers");
+        const collagesDatabase = client.db("collageDB").collection("collages");
 
         app.get('/papers', async (req, res) => {
             const cursor = papresDatabase.find()
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.get('/collages', async (req, res) => {
+            const cursor = collagesDatabase.find()
             const result = await cursor.toArray();
             res.send(result);
         })
