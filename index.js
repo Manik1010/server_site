@@ -32,6 +32,7 @@ async function run() {
         const usersDatabase = client.db("collageDB").collection("users");
         const papresDatabase = client.db("collageDB").collection("papers");
         const collagesDatabase = client.db("collageDB").collection("collages");
+        const admissionDatabase = client.db("collageDB").collection("admission");
 
         app.get('/papers', async (req, res) => {
             const cursor = papresDatabase.find()
@@ -45,10 +46,24 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/collageview', async (req, res) => {
+            const cursor = collagesDatabase.find()
+            const result = await cursor.toArray();
+
+            // Sort the result array in descending order based on the rating
+            result.sort((a, b) => b.ratting - a.ratting);
+
+            // Take the top 3 items from the sorted array
+            const topThreeRatings = result.slice(0, 3);
+
+            res.send(topThreeRatings);
+            // res.send(result);
+        })
+
         // users related apis..........................................
         app.get('/users', async (req, res) => {
             const email = req.query.email;
-            console.log(email)
+            // console.log(email)
             if (!email) {
                 res.send([]);
             }
@@ -94,6 +109,25 @@ async function run() {
             const result = await usersDatabase.updateOne(filter, updateProfile, options);
             res.send(result);
 
+        })
+
+        app.get('/admissions', async (req, res) => {
+            const email = req.query.email;
+            // console.log(email)
+            if (!email) {
+                res.send([]);
+            }
+
+            const query = { email: email }
+            const result = await admissionDatabase.findOne(query);
+            res.send(result);
+        })
+
+        app.post("/postAdmission", async (req, res) => {
+            const admissionInfo = req.body;
+            // console.log("admissionInfo :", admissionInfo);
+            const result = await admissionDatabase.insertOne(admissionInfo);
+            res.send(result);
         })
 
 
