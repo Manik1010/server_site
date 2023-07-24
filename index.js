@@ -41,8 +41,17 @@ async function run() {
         })
 
         app.get('/collages', async (req, res) => {
+            // const search = req.query.search;
+            // console.log(search);
+            // db.InspirationalWomen.find({first_name: { $regex: /Harriet/i} })
+            // const query = {name: { $regex: search}, $options: 'i'}
+
             const cursor = collagesDatabase.find()
             const result = await cursor.toArray();
+
+            // const cursor2 = collagesDatabase.find(query)
+            // const result2 = await cursor2.toArray();
+
             res.send(result);
         })
 
